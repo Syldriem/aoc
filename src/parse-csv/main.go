@@ -8,7 +8,15 @@ import (
 	"sort"
 	"strings"
 )
-func countOrdersPerCompany(idx []string) map[string]int {
+
+type thing struct {
+    company_id string
+    region string
+    cars string
+    order_date string
+}
+
+func count(idx []string) map[string]int {
     ordersPerCompany := make(map[string]int);
     for _, v := range idx {
         val, ok := ordersPerCompany[v];
@@ -22,6 +30,7 @@ func countOrdersPerCompany(idx []string) map[string]int {
     }
     return ordersPerCompany;
 }
+
 func sortMap(orders map[string]int) []string{
     sortedVals := []string{}
 
@@ -48,15 +57,21 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    idx := parseLine(data);
-    result := countOrdersPerCompany(idx);
+    idx := parseId(data);
+    cars := parseCar(data)
+    result := count(idx);
+    res := count(cars)
+    sortRes := sortMap(res)
     sortedRes := sortMap(result);
     for _, k := range sortedRes{
         fmt.Printf("%q %v\n",k, result[k]);
     }
+    for _, k := range sortRes{
+        fmt.Printf("%q %v\n",k, res[k]);
+    }
 }
 
-func parseLine(data [][]string) []string {
+func parseId(data [][]string) []string {
     parts := []string{};
     for i, line := range data {
         if i > 0 {
@@ -66,7 +81,20 @@ func parseLine(data [][]string) []string {
             }
             parts = append(parts, record[0]);
         }
+    }
+    return parts;
+}
 
+func parseCar(data [][]string) []string {
+    parts := []string{};
+    for i, line := range data {
+        if i > 0 {
+            var record []string;
+            for _, field := range line {
+                record = strings.Split(field, ";")
+            }
+            parts = append(parts, record[2]);
+        }
     }
     return parts;
 }
